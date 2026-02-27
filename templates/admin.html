@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="mb-4">Admin Analytics Dashboard</h2>
+
+<div class="row mb-4">
+
+    <div class="col-md-4">
+        <div class="card bg-primary text-white p-4 rounded-4 shadow">
+            <h4>Total Users</h4>
+            <h2>{{ total_users }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card bg-success text-white p-4 rounded-4 shadow">
+            <h4>Total Encodes</h4>
+            <h2>{{ total_encodes }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card bg-warning text-dark p-4 rounded-4 shadow">
+            <h4>Total Decodes</h4>
+            <h2>{{ total_decodes }}</h2>
+        </div>
+    </div>
+
+</div>
+
+<!-- Chart Section -->
+<div class="card bg-black text-white p-4 rounded-4 shadow mb-4">
+    <h4>Daily Usage</h4>
+    <canvas id="usageChart"></canvas>
+</div>
+
+<!-- Recent Activity -->
+<div class="card bg-black text-white p-4 rounded-4 shadow">
+    <h4>Recent Activity</h4>
+    <table class="table table-dark mt-3">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Action</th>
+                <th>Filename</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item, username in recent_activity %}
+            <tr>
+                <td>{{ username }}</td>
+                <td>{{ item.action }}</td>
+                <td>{{ item.filename }}</td>
+                <td>{{ item.timestamp.strftime("%Y-%m-%d") }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Users List with Delete -->
+<div class="card bg-black text-white p-4 rounded-4 shadow mt-4">
+    <h4>All Users</h4>
+    <table class="table table-dark mt-3">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in all_users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.role }}</td>
+                <td>
+                    {% if user.role != "admin" %}
+                    <a href="/delete_user/{{ user.id }}" class="btn btn-danger btn-sm">Delete</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('usageChart');
+
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: {{ dates|tojson }},
+        datasets: [{
+            label: 'Daily Activity',
+            data: {{ counts|tojson }},
+            borderWidth: 2,
+            tension: 0.3
+        }]
+    },
+});
+</script>
+
+{% endblock %}
