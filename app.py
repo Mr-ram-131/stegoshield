@@ -22,7 +22,9 @@ cipher = Fernet(SECRET_ENCRYPTION_KEY)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'supersecretkey'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 
 db = SQLAlchemy(app)
 
