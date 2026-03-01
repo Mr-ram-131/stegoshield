@@ -6,6 +6,13 @@ from PIL import Image
 import io
 import os
 from cryptography.fernet import Fernet
+from flask_bcrypt import Bcrypt
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
 
 
 
@@ -65,7 +72,7 @@ def register():
             flash("Username already exists", "danger")
             return redirect(url_for('register'))
 
-        new_user = User(username=username, password=password,role="admin")
+        new_user = User(username=username, password=password)
         db.session.add(new_user)
         db.session.commit()
 
@@ -241,9 +248,19 @@ def decode():
 with app.app_context():
     db.create_all()
 
+    # Auto create admin if not exists
+    admin_username = "admin"
+    existing_admin = User.query.filter_by(username=admin_username).first()
+    if not existing_admin:
+        admin_user = User(
+            username="admin",
+            password=bcrypt.generate_password_hash("admin123").decode("utf-8"),
+            role="admin"
+        )
+        db.session.add(admin_user)
+        db.session.commit()
+        print("Admin user created.")
+
 if __name__ == "__main__":
-    if not os.path.exists("database.db"):
-        with app.app_context():
-            db.create_all()
     app.run()
 
