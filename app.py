@@ -248,13 +248,13 @@ def decode():
 with app.app_context():
     db.create_all()
 
-    # Auto create admin if not exists
     admin_username = "admin"
     existing_admin = User.query.filter_by(username=admin_username).first()
+
     if not existing_admin:
         admin_user = User(
             username="admin",
-            password=bcrypt.generate_password_hash("admin123").decode("utf-8"),
+            password=generate_password_hash("admin123"),
             role="admin"
         )
         db.session.add(admin_user)
