@@ -238,6 +238,9 @@ def decode():
 
 # ================= MAIN =================
 
+with app.app_context():
+    db.create_all()
+    
 if __name__ == "__main__":
     if not os.path.exists("database.db"):
         with app.app_context():
