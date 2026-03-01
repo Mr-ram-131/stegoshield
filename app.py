@@ -65,7 +65,7 @@ def register():
             flash("Username already exists", "danger")
             return redirect(url_for('register'))
 
-        new_user = User(username=username, password=password)
+        new_user = User(username=username, password=password,role="admin")
         db.session.add(new_user)
         db.session.commit()
 
@@ -240,7 +240,7 @@ def decode():
 
 with app.app_context():
     db.create_all()
-    
+
 if __name__ == "__main__":
     if not os.path.exists("database.db"):
         with app.app_context():
