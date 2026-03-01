@@ -51,3 +51,4 @@ tzdata==2025.2
 uvicorn==0.40.0
 Werkzeug==3.1.5
 yt-dlp==2025.8.20
+psycopg2-binary
